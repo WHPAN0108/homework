@@ -107,19 +107,19 @@ training_eurico<-sub_eurico_clean[which(abs(cor_value_eurico)>0.3)]
 training_eurico<-cbind(training_eurico,classe=sub_eurico_clean$classe)
 dim(training_eurico)
 
-training_adelmo<-sub_adelmo_clean[which(abs(cor_value_adelmo)>0.3)]
+training_adelmo<-sub_adelmo_clean[which(abs(cor_value_adelmo)>0.1)]
 training_adelmo<-cbind(training_adelmo,classe=sub_adelmo_clean$classe)
 dim(training_adelmo)
 
-training_charles<-sub_charles_clean[which(abs(cor_value_charles)>0.3)]
+training_charles<-sub_charles_clean[which(abs(cor_value_charles)>0.1)]
 training_charles<-cbind(training_charles,classe=sub_charles_clean$classe)
 dim(training_charles)
 
-training_pedro<-sub_pedro_clean[which(abs(cor_value_pedro)>0.2)]
+training_pedro<-sub_pedro_clean[which(abs(cor_value_pedro)>0.1)]
 training_pedro<-cbind(training_pedro,classe=sub_pedro_clean$classe)
-dim(training_pedro)
+head(training_pedro)
 
-training_jeremy<-sub_jeremy_clean[which(abs(cor_value_jeremy)>0.3)]
+training_jeremy<-sub_jeremy_clean[which(abs(cor_value_jeremy)>0.1)]
 training_jeremy<-cbind(training_jeremy,classe=sub_jeremy_clean$classe)
 dim(training_jeremy)
 
@@ -132,13 +132,83 @@ Prediction
 library(caret)
 set.seed(3456)
 trainIndex <- createDataPartition(training_pedro$classe, p = .8,list=F)
-
+class(training_pedro[,3])
 tran1<-training_pedro[trainIndex,]
 test1<-training_pedro[-trainIndex,]
-#modFit<-train(classe~.,data=tran1,method="rf",prox=T)
-#pred <- predict(modFit,test1)
-#table(pred,test1$classe)
-#dim(tran1)
-#summary(tran1)
-#dim(test1)
+modFit_pedro<-train(classe~.,data=tran1,method="rf")
+pred <- predict(modFit,test1)
+a<-table(pred,test1$classe)
+sum(diag(a))/sum(a)
+
+
+trainIndex <- createDataPartition(training_jeremy$classe, p = .8,list=F)
+tran1<-training_jeremy[trainIndex,]
+test1<-training_jeremy[-trainIndex,]
+modFit_jeremy<-train(classe~.,data=tran1,method="rf")
+pred <- predict(modFit_jeremy,test1)
+table(pred,test1$classe)
+
+
+
+trainIndex <- createDataPartition(training_charles$classe, p = .8,list=F)
+tran1<-training_charles[trainIndex,]
+test1<-training_charles[-trainIndex,]
+modFit_charles<-train(classe~.,data=tran1,method="rf")
+
+trainIndex <- createDataPartition(training_carlitos$classe, p = .8,list=F)
+tran1<-training_carlitos[trainIndex,]
+test1<-training_carlitos[-trainIndex,]
+modFit_carlitos<-train(classe~.,data=tran1,method="rf")
+pred <- predict(modFit_carlitos,test1)
+table(pred,test1$classe)
+
+trainIndex <- createDataPartition(training_eurico$classe, p = .8,list=F)
+tran1<-training_eurico[trainIndex,]
+test1<-training_eurico[-trainIndex,]
+modFit_eurico<-train(classe~.,data=tran1,method="rf")
+pred <- predict(modFit_eurico,test1)
+table(pred,test1$classe)
+
+trainIndex <- createDataPartition(training_adelmo$classe, p = .8,list=F)
+tran1<-training_adelmo[trainIndex,]
+test1<-training_adelmo[-trainIndex,]
+modFit_adelmo<-train(classe~.,data=tran1,method="rf")
+pred <- predict(modFit_adelmo,test1)
+table(pred,test1$classe)
+```
+
+predict the test data
+```{r}
+pred_classe<-NULL
+for(i in 1:20){
+  if (test$user_name[i]=="pedro"){
+    pred_classe[i]=predict(modFit_pedro,test[i,])
+  }
+  else if (test$user_name[i]=="adelmo"){
+    pred_classe[i]=predict(modFit_adelmo,test[i,])
+  }
+  else if (test$user_name[i]=="eurico"){
+    pred_classe[i]=predict(modFit_eurico,test[i,])
+  }
+  else if (test$user_name[i]=="carlitos"){
+    pred_classe[i]=predict(modFit_carlitos,test[i,])
+  }
+  else if (test$user_name[i]=="charles"){
+    pred_classe[i]=predict(modFit_charles,test[i,])
+  }
+  else if (test$user_name[i]=="jeremy"){
+    pred_classe[i]=predict(modFit_jeremy,test[i,])
+  }
+}
+
+pml_write_files = function(x){
+  n = length(x)
+  for(i in 1:n){
+    filename = paste0("problem_id_",i,".txt")
+    write.table(x[i],file=filename,quote=FALSE,row.names=FALSE,col.names=FALSE)
+  }
+}
+
+pml_write_files(pred_classe)
+  
 ```
