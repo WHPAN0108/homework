@@ -197,43 +197,84 @@ dim(training_eurico)
 ```
 
 ```r
-training_adelmo<-sub_adelmo_clean[which(abs(cor_value_adelmo)>0.3)]
+training_adelmo<-sub_adelmo_clean[which(abs(cor_value_adelmo)>0.1)]
 training_adelmo<-cbind(training_adelmo,classe=sub_adelmo_clean$classe)
 dim(training_adelmo)
 ```
 
 ```
-## [1] 3809    8
+## [1] 3809   31
 ```
 
 ```r
-training_charles<-sub_charles_clean[which(abs(cor_value_charles)>0.3)]
+training_charles<-sub_charles_clean[which(abs(cor_value_charles)>0.1)]
 training_charles<-cbind(training_charles,classe=sub_charles_clean$classe)
 dim(training_charles)
 ```
 
 ```
-## [1] 3455   25
+## [1] 3455   35
 ```
 
 ```r
-training_pedro<-sub_pedro_clean[which(abs(cor_value_pedro)>0.2)]
+training_pedro<-sub_pedro_clean[which(abs(cor_value_pedro)>0.1)]
 training_pedro<-cbind(training_pedro,classe=sub_pedro_clean$classe)
-dim(training_pedro)
+head(training_pedro)
 ```
 
 ```
-## [1] 2555   11
+##     roll_belt yaw_belt accel_belt_x accel_belt_z yaw_arm gyros_arm_z
+## 166       129     1.63          -43         -188     151       -0.11
+## 167       129     1.53          -45         -185     151       -0.10
+## 168       129     1.07          -42         -184     150       -0.08
+## 169       129     0.95          -44         -187     150       -0.07
+## 170       129     0.87          -42         -188     150       -0.05
+## 171       129     0.78          -41         -189     150       -0.05
+##     accel_arm_y accel_arm_z magnet_arm_x magnet_arm_z roll_dumbbell
+## 166         -76         -87         -432          460     -78.49260
+## 167         -77         -86         -427          461     -93.11186
+## 168         -75         -87         -432          454    -101.60582
+## 169         -76         -87         -428          450     -76.76639
+## 170         -77         -86         -426          455     -76.87968
+## 171         -75         -88         -430          450     -63.19692
+##     pitch_dumbbell yaw_dumbbell gyros_dumbbell_z accel_dumbbell_x
+## 166     -62.347002     41.09499            -0.10              -19
+## 167     -36.078286     50.22204            -0.03              -11
+## 168     -21.972226     50.00949            -0.05              -10
+## 169      -8.179190     79.64546            -0.03               -4
+## 170       7.732938     79.60293            -0.10                4
+## 171      37.601149     80.15876            -0.15               23
+##     accel_dumbbell_y accel_dumbbell_z magnet_dumbbell_x magnet_dumbbell_y
+## 166              -23               13               499              -562
+## 167              -25               15               494              -560
+## 168              -39               22               495              -557
+## 169              -34               35               499              -569
+## 170              -36               37               493              -561
+## 171              -37               45               497              -567
+##     magnet_dumbbell_z yaw_forearm gyros_forearm_z accel_forearm_z
+## 166              -155         108           -0.02            -198
+## 167              -151         108           -0.05            -197
+## 168              -137         108            0.00            -198
+## 169              -123         108           -0.05            -196
+## 170              -124         108           -0.08            -198
+## 171              -113         107           -0.11            -193
+##     magnet_forearm_x magnet_forearm_y classe
+## 166             -139              741      A
+## 167             -144              747      A
+## 168             -146              744      A
+## 169             -139              742      A
+## 170             -145              749      A
+## 171             -143              750      A
 ```
 
 ```r
-training_jeremy<-sub_jeremy_clean[which(abs(cor_value_jeremy)>0.3)]
+training_jeremy<-sub_jeremy_clean[which(abs(cor_value_jeremy)>0.1)]
 training_jeremy<-cbind(training_jeremy,classe=sub_jeremy_clean$classe)
 dim(training_jeremy)
 ```
 
 ```
-## [1] 3325   17
+## [1] 3325   30
 ```
 
 Prediction
@@ -251,13 +292,162 @@ library(caret)
 ```r
 set.seed(3456)
 trainIndex <- createDataPartition(training_pedro$classe, p = .8,list=F)
+class(training_pedro[,3])
+```
 
+```
+## [1] "integer"
+```
+
+```r
 tran1<-training_pedro[trainIndex,]
 test1<-training_pedro[-trainIndex,]
-#modFit<-train(classe~.,data=tran1,method="rf",prox=T)
-#pred <- predict(modFit,test1)
-#table(pred,test1$classe)
-#dim(tran1)
-#summary(tran1)
-#dim(test1)
+modFit_pedro<-train(classe~.,data=tran1,method="rf")
+```
+
+```
+## Loading required package: randomForest
+## randomForest 4.6-10
+## Type rfNews() to see new features/changes/bug fixes.
+```
+
+```r
+pred <- predict(modFit,test1)
+```
+
+```
+## Error in predict(modFit, test1): 找不到物件 'modFit'
+```
+
+```r
+a<-table(pred,test1$classe)
+```
+
+```
+## Error in table(pred, test1$classe): 找不到物件 'pred'
+```
+
+```r
+sum(diag(a))/sum(a)
+```
+
+```
+## Error in diag(a): 找不到物件 'a'
+```
+
+```r
+trainIndex <- createDataPartition(training_jeremy$classe, p = .8,list=F)
+tran1<-training_jeremy[trainIndex,]
+test1<-training_jeremy[-trainIndex,]
+modFit_jeremy<-train(classe~.,data=tran1,method="rf")
+pred <- predict(modFit_jeremy,test1)
+table(pred,test1$classe)
+```
+
+```
+##     
+## pred   A   B   C   D   E
+##    A 231   0   0   0   0
+##    B   0  95   2   0   0
+##    C   0   0 124   3   0
+##    D   0   0   1  98   0
+##    E   0   0   0   0 110
+```
+
+```r
+trainIndex <- createDataPartition(training_charles$classe, p = .8,list=F)
+tran1<-training_charles[trainIndex,]
+test1<-training_charles[-trainIndex,]
+modFit_charles<-train(classe~.,data=tran1,method="rf")
+
+trainIndex <- createDataPartition(training_carlitos$classe, p = .8,list=F)
+tran1<-training_carlitos[trainIndex,]
+test1<-training_carlitos[-trainIndex,]
+modFit_carlitos<-train(classe~.,data=tran1,method="rf")
+pred <- predict(modFit_carlitos,test1)
+table(pred,test1$classe)
+```
+
+```
+##     
+## pred   A   B   C   D   E
+##    A 164   0   0   0   0
+##    B   0 132   0   0   0
+##    C   0   2  97   1   3
+##    D   0   0   0  94   0
+##    E   0   0   0   0 116
+```
+
+```r
+trainIndex <- createDataPartition(training_eurico$classe, p = .8,list=F)
+tran1<-training_eurico[trainIndex,]
+test1<-training_eurico[-trainIndex,]
+modFit_eurico<-train(classe~.,data=tran1,method="rf")
+pred <- predict(modFit_eurico,test1)
+table(pred,test1$classe)
+```
+
+```
+##     
+## pred   A   B   C   D   E
+##    A 165   0   4   1   1
+##    B   1 115   2   2   0
+##    C   1   0  88   2   4
+##    D   0   0   0 109   1
+##    E   2   1   2   0 100
+```
+
+```r
+trainIndex <- createDataPartition(training_adelmo$classe, p = .8,list=F)
+tran1<-training_adelmo[trainIndex,]
+test1<-training_adelmo[-trainIndex,]
+modFit_adelmo<-train(classe~.,data=tran1,method="rf")
+pred <- predict(modFit_adelmo,test1)
+table(pred,test1$classe)
+```
+
+```
+##     
+## pred   A   B   C   D   E
+##    A 228   1   0   0   0
+##    B   0 151   0   0   0
+##    C   0   0 146   0   0
+##    D   0   0   1 101   2
+##    E   0   0   0   0 130
+```
+
+predict the test data
+
+```r
+pred_classe<-NULL
+for(i in 1:20){
+  if (test$user_name[i]=="pedro"){
+    pred_classe[i]=predict(modFit_pedro,test[i,])
+  }
+  else if (test$user_name[i]=="adelmo"){
+    pred_classe[i]=predict(modFit_adelmo,test[i,])
+  }
+  else if (test$user_name[i]=="eurico"){
+    pred_classe[i]=predict(modFit_eurico,test[i,])
+  }
+  else if (test$user_name[i]=="carlitos"){
+    pred_classe[i]=predict(modFit_carlitos,test[i,])
+  }
+  else if (test$user_name[i]=="charles"){
+    pred_classe[i]=predict(modFit_charles,test[i,])
+  }
+  else if (test$user_name[i]=="jeremy"){
+    pred_classe[i]=predict(modFit_jeremy,test[i,])
+  }
+}
+
+pml_write_files = function(x){
+  n = length(x)
+  for(i in 1:n){
+    filename = paste0("problem_id_",i,".txt")
+    write.table(x[i],file=filename,quote=FALSE,row.names=FALSE,col.names=FALSE)
+  }
+}
+
+pml_write_files(pred_classe)
 ```
